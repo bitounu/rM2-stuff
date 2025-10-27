@@ -381,6 +381,11 @@ bool
 term_init(struct terminal_t* term, int width, int height) {
   extern const uint32_t color_list[COLORS]; /* global */
 
+  if (term->cellWidth <= 0)
+    term->cellWidth = CELL_WIDTH;
+  if (term->cellHeight <= 0)
+    term->cellHeight = CELL_HEIGHT;
+
   term_resize(term, width, height, /* report */ false);
 
   term->shouldClear = false;
@@ -451,10 +456,10 @@ term_resize(struct terminal_t* term, int width, int height, bool report) {
   term->height = height;
 
   /* 1 px margin on edges */
-  term->cols = (term->width - X_MARGIN) / CELL_WIDTH;
-  term->lines = (term->height - Y_MARGIN) / CELL_HEIGHT;
-  term->marginTop = (term->height - term->lines * CELL_HEIGHT) / 2;
-  term->marginLeft = (term->width - term->cols * CELL_WIDTH) / 2;
+  term->cols = (term->width - X_MARGIN) / term->cellWidth;
+  term->lines = (term->height - Y_MARGIN) / term->cellHeight;
+  term->marginTop = (term->height - term->lines * term->cellHeight) / 2;
+  term->marginLeft = (term->width - term->cols * term->cellWidth) / 2;
 
   term->scroll.top = 0;
   term->scroll.bottom = term->lines - 1;
@@ -463,8 +468,8 @@ term_resize(struct terminal_t* term, int width, int height, bool report) {
     struct winsize ws;
     ws.ws_col = term->cols;
     ws.ws_row = term->lines;
-    ws.ws_xpixel = CELL_WIDTH * term->cols;
-    ws.ws_ypixel = CELL_HEIGHT * term->lines;
+    ws.ws_xpixel = term->cellWidth * term->cols;
+    ws.ws_ypixel = term->cellHeight * term->lines;
     ioctl(term->fd, TIOCSWINSZ, &ws);
   }
 }

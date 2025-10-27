@@ -1,6 +1,8 @@
 #include "screen.h"
 #include "conf.h"
 
+#include <algorithm>
+
 using namespace rmlib;
 
 namespace {
@@ -10,7 +12,8 @@ inline int
 myCeil(int val, int div) {
   if (div == 0) {
     return 0;
-  }     return (val + div - 1) / div;
+  }
+  return (val + div - 1) / div;
 }
 
 inline uint16_t
@@ -40,11 +43,14 @@ brightness2gray(uint16_t brightness) {
 }
 
 void
-initMouseBuf(std::array<char, 6>& buf, Point loc) {
+initMouseBuf(std::array<char, 6>& buf, Point loc, const terminal_t& term) {
   constexpr char esc_char = '\x1b';
 
-  loc.x /= CELL_WIDTH;
-  loc.y /= CELL_HEIGHT;
+  const int cellWidth = term.cellWidth > 0 ? term.cellWidth : CELL_WIDTH;
+  const int cellHeight = term.cellHeight > 0 ? term.cellHeight : CELL_HEIGHT;
+
+  loc.x /= cellWidth;
+  loc.y /= cellHeight;
 
   char cx = 33 + loc.x;
   char cy = 33 + loc.y;
@@ -110,8 +116,8 @@ ScreenRenderObject::doDraw(rmlib::Rect rect, rmlib::Canvas& canvas) {
     }
 
     bool useA2 = widget->isLandscape
-                   ? term.lines * CELL_HEIGHT <= currentRect.width()
-                   : term.lines * CELL_HEIGHT <= currentRect.height();
+                   ? term.lines * term.cellHeight <= currentRect.width()
+                   : term.lines * term.cellHeight <= currentRect.height();
     fb->doUpdate(currentRect,
                  useA2 ? fb::Waveform::A2 : fb::Waveform::DU,
                  useA2 ? fb::UpdateFlags::None : fb::UpdateFlags::Priority);
@@ -147,13 +153,15 @@ ScreenRenderObject::drawLine(rmlib::Canvas& canvas,
   const bool isLandscape = widget->isLandscape;
 
   // x in landscape, y in portrait.
-  int zStart =
-    isLandscape
-      ? term.height - (term.marginTop + line * CELL_HEIGHT) + rect.topLeft.x
-      : term.marginTop + line * CELL_HEIGHT + rect.topLeft.y;
+  const int scale = std::max(1, term.cellWidth / CELL_WIDTH);
+
+  int zStart = isLandscape
+                 ? term.height - (term.marginTop + line * term.cellHeight) +
+                     rect.topLeft.x
+                 : term.marginTop + line * term.cellHeight + rect.topLeft.y;
 
   for (int col = 0; col < term.cols; col++) {
-    int marginLeft = term.marginLeft + col * CELL_WIDTH +
+    int marginLeft = term.marginLeft + col * term.cellWidth +
                       (isLandscape ? rect.topLeft.y : rect.topLeft.x);
 
     auto& cell = term.cells[line][col];
@@ -207,14 +215,16 @@ ScreenRenderObject::drawLine(rmlib::Canvas& canvas,
       }
     }
 
-    for (int h = 0; h < CELL_HEIGHT; h++) {
+    for (int h = 0; h < term.cellHeight; h++) {
+      const int glyphRow = std::min(h / scale, CELL_HEIGHT - 1);
       /* if UNDERLINE attribute on, swap bg/fg */
-      if ((h == (CELL_HEIGHT - 1)) &&
+      if ((h == (term.cellHeight - 1)) &&
           ((cell.attribute & attr_mask[ATTR_UNDERLINE]) != 0)) {
         std::swap(bgGray, fgGray);
       }
 
-      for (int w = 0; w < CELL_WIDTH; w++) {
+      for (int w = 0; w < term.cellWidth; w++) {
+        const int glyphCol = std::min(w / scale, CELL_WIDTH - 1);
         int pos = isLandscape ? (marginLeft + w) * canvas.lineSize() +
                                   (zStart - h) * canvas.components()
                               : (marginLeft + w) * canvas.components() +
@@ -226,7 +236,8 @@ ScreenRenderObject::drawLine(rmlib::Canvas& canvas,
                               : cell.glyph.regularp;
 
         const auto grayMode =
-          (glyph->bitmap[h] & (0x01 << (bdfPadding + CELL_WIDTH - 1 - w))) != 0U
+          (glyph->bitmap[glyphRow] &
+           (0x01 << (bdfPadding + CELL_WIDTH - 1 - glyphCol))) != 0U
             ? fgGray
             : bgGray;
 
@@ -252,10 +263,11 @@ ScreenRenderObject::drawLine(rmlib::Canvas& canvas,
   term.line_dirty[line] =
     ((term.mode & MODE_CURSOR) != 0u) && term.cursor.y == line;
 
-  return isLandscape ? Rect{ { zStart - CELL_HEIGHT, 0 },
+  return isLandscape ? Rect{ { zStart - term.cellHeight, 0 },
                              { zStart, rect.height() - 1 } }
                      : Rect{ { 0, zStart },
-                             { rect.width() - 1, zStart + CELL_HEIGHT - 1 } };
+                             { rect.width() - 1,
+                               zStart + term.cellHeight - 1 } };
 }
 
 template<typename Ev>
@@ -292,7 +304,7 @@ ScreenRenderObject::handleTouchEvent(const Ev& ev) {
       : scaledLoc;
 
   std::array<char, 6> buf{};
-  initMouseBuf(buf, rotatedLoc);
+  initMouseBuf(buf, rotatedLoc, *widget->term);
 
   // Mouse down on first finger if mouse is not down.
   if (ev.isDown() && mouseSlot == -1 /*&& lastFingers == 0*/) {

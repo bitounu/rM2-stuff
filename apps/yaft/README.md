@@ -14,4 +14,12 @@ There's an on-screen keyboard that can be partially hidden by long pressing the 
 When the type folio is attached the screen will go into landscape mode and the keyboard will be hidden.
 Mouse events are supported using the touchscreen.
 
+Configuration
+-------------
+
+The configuration file is stored at `~/.config/yaft/config.toml`. To change the
+font size, adjust the integer `font-scale` parameter (minimum value `1`). Larger
+values enlarge each terminal cell proportionally, increasing the on-screen font
+size.
+
 Original author: Copyright (c) 2012 haru <uobikiemukot at gmail dot com>

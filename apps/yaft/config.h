@@ -23,6 +23,8 @@ struct YaftConfig {
   // Set to 0 to disable.
   int autoRefresh = 0;
 
+  int fontScale = 1;
+
   static YaftConfig getDefault();
 };
 

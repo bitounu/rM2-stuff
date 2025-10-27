@@ -233,6 +233,7 @@ struct sixel_canvas_t {
 struct terminal_t {
   int fd;                 /* master of pseudo terminal */
   int width, height;      /* terminal size (pixel) */
+  int cellWidth, cellHeight; /* terminal cell size (pixel) */
   int cols, lines;        /* terminal size (cell) */
   struct cell_t** cells;  /* pointer to each cell: cells[y * lines + x] */
   struct margin_t scroll; /* scroll margin */
