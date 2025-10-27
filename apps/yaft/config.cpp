@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <filesystem>
+#include <cstdint>
 #include <toml++/toml.h>
 
 namespace {
@@ -22,6 +23,9 @@ orientation = "auto"
 # Do a full refresh after 1024 updates.
 # Set to 0 to disable auto refresh.
 auto-refresh = 1024
+
+# Scale of the font (integer >= 1)
+font-scale = 1
 )";
 
 std::filesystem::path
@@ -85,6 +89,17 @@ getConfig(const toml::table& tbl) {
                        { "landscape", YaftConfig::Orientation::Landscape } }));
 
   cfg.autoRefresh = tbl["auto-refresh"].value_or(cfg.autoRefresh);
+
+  if (const auto scaleVal = tbl["font-scale"].value<int64_t>();
+      scaleVal.has_value()) {
+    if (*scaleVal < 1) {
+      return tl::unexpected(YaftConfigError{
+        YaftConfigError::Syntax,
+        "Invalid font-scale: must be >= 1",
+      });
+    }
+    cfg.fontScale = static_cast<int>(*scaleVal);
+  }
 
   return cfg;
 }

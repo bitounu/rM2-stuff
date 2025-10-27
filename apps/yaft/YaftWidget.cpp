@@ -10,6 +10,7 @@
 
 #include <Device.h>
 
+#include <algorithm>
 #include <sstream>
 
 using namespace rmlib;
@@ -45,15 +46,17 @@ forkAndExec(int* master,
             const char* cmd,
             char* const argv[],
             int lines,
-            int cols) {
+            int cols,
+            int cellWidth,
+            int cellHeight) {
   pid_t pid = 0;
   struct winsize ws {};
   ws.ws_row = lines;
   ws.ws_col = cols;
   /* XXX: this variables are UNUSED (man tty_ioctl),
           but useful for calculating terminal cell size */
-  ws.ws_ypixel = CELL_HEIGHT * lines;
-  ws.ws_xpixel = CELL_WIDTH * cols;
+  ws.ws_ypixel = cellHeight * lines;
+  ws.ws_xpixel = cellWidth * cols;
 
   pid = eforkpty(master, nullptr, nullptr, &ws);
   if (pid < 0) {
@@ -84,6 +87,15 @@ void
 YaftState::init(rmlib::AppContext& ctx, const rmlib::BuildContext& /*unused*/) {
   term = std::make_unique<terminal_t>();
 
+  const auto& cfg = getWidget().config;
+  const auto& canvas = ctx.getFbCanvas();
+  const int maxWidthScale = std::max(1, canvas.width() / CELL_WIDTH);
+  const int maxHeightScale = std::max(1, canvas.height() / CELL_HEIGHT);
+  const int maxScale = std::max(1, std::min(maxWidthScale, maxHeightScale));
+  const int scale = std::clamp(cfg.fontScale, 1, maxScale);
+  term->cellWidth = CELL_WIDTH * scale;
+  term->cellHeight = CELL_HEIGHT * scale;
+
   // term_init needs the maximum size of the terminal.
   int maxSize = std::max(ctx.getFbCanvas().width(), ctx.getFbCanvas().height());
   if (!term_init(term.get(), maxSize, maxSize)) {
@@ -102,7 +114,9 @@ YaftState::init(rmlib::AppContext& ctx, const rmlib::BuildContext& /*unused*/) {
                    getWidget().cmd,
                    getWidget().argv,
                    term->lines,
-                   term->cols)) {
+                   term->cols,
+                   term->cellWidth,
+                   term->cellHeight)) {
     puts("Failed to fork!");
     std::exit(EXIT_FAILURE);
   }
