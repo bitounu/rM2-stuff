@@ -493,7 +493,7 @@ decdld_bitmap(struct glyph_t* glyph,
         logging(
           DEBUG, "height_shift:%d width_shift:%d\n", height_shift, width_shift);
         glyph->bitmap[height_shift] |=
-          bit_mask[CELL_WIDTH] & (0x01 << width_shift);
+          bit_mask[CELL_WIDTH] & (0x01ULL << width_shift);
       }
     }
   }
