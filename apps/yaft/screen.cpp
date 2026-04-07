@@ -223,7 +223,7 @@ ScreenRenderObject::drawLine(rmlib::Canvas& canvas,
                               : cell.glyph.regularp;
 
         const auto grayMode =
-          (glyph->bitmap[h] & (0x01 << (bdfPadding + CELL_WIDTH - 1 - w))) != 0U
+          (glyph->bitmap[h] & (static_cast<uint64_t>(1) << (bdfPadding + CELL_WIDTH - 1 - w))) != 0U
             ? fgGray
             : bgGray;
 
