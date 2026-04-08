@@ -41,6 +41,40 @@ getKeyCodeStr(int scancode, bool shift, bool alt, bool ctrl, bool appCursor) {
     buf[3] = 0;
   };
 
+  // Unicode characters (codepoints 0x80..0x10FFFF, below SpecialKeys range)
+  if (scancode >= 0x80 && scancode < Escape) {
+    if (shift) {
+      static const std::pair<int, int> lower_to_upper[] = {
+        { U'ą', U'Ą' }, { U'ć', U'Ć' }, { U'ę', U'Ę' }, { U'ł', U'Ł' },
+        { U'ń', U'Ń' }, { U'ó', U'Ó' }, { U'ś', U'Ś' }, { U'ź', U'Ź' },
+        { U'ż', U'Ż' },
+      };
+      for (auto [lower, upper] : lower_to_upper) {
+        if (scancode == lower) {
+          scancode = upper;
+          break;
+        }
+      }
+    }
+    int len = 0;
+    const auto cp = unsigned(scancode);
+    if (cp <= 0x7FFu) {
+      buf[len++] = char(0xC0u | (cp >> 6));
+      buf[len++] = char(0x80u | (cp & 0x3Fu));
+    } else if (cp <= 0xFFFFu) {
+      buf[len++] = char(0xE0u | (cp >> 12));
+      buf[len++] = char(0x80u | ((cp >> 6) & 0x3Fu));
+      buf[len++] = char(0x80u | (cp & 0x3Fu));
+    } else {
+      buf[len++] = char(0xF0u | (cp >> 18));
+      buf[len++] = char(0x80u | ((cp >> 12) & 0x3Fu));
+      buf[len++] = char(0x80u | ((cp >> 6) & 0x3Fu));
+      buf[len++] = char(0x80u | (cp & 0x3Fu));
+    }
+    buf[len] = 0;
+    return buf.data();
+  }
+
   if (scancode > 0xFF) {
     // TODO: support modifiers.
     switch (scancode) {

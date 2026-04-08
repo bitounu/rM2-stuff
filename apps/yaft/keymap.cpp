@@ -21,38 +21,38 @@ const KeyMap qwerty_keymap = {
   { KEY_TAB, { Tab } },
   { KEY_Q, { 'Q' } },
   { KEY_W, { 'W' } },
-  { KEY_E, { 'E' } },
+  { KEY_E, { 'E', 0, 0, 0x119 } }, // mod2: ę
   { KEY_R, { 'R' } },
   { KEY_T, { 'T' } },
   { KEY_Y, { 'Y' } },
   { KEY_U, { 'U' } },
   { KEY_I, { 'I' } },
-  { KEY_O, { 'O' } },
+  { KEY_O, { 'O', 0, 0, 0x00F3 } }, // mod2: ó
   { KEY_P, { 'P' } },
   { KEY_LEFTBRACE, { '[', '{' } },
   { KEY_RIGHTBRACE, { ']', '}' } },
   { KEY_ENTER, { Enter } },
   { KEY_LEFTCTRL, { Ctrl } },
-  { KEY_A, { 'A' } },
-  { KEY_S, { 'S' } },
+  { KEY_A, { 'A', 0, 0, 0x105 } },  // mod2: ą
+  { KEY_S, { 'S', 0, 0, 0x15B } },  // mod2: ś
   { KEY_D, { 'D' } },
   { KEY_F, { 'F' } },
   { KEY_G, { 'G' } },
   { KEY_H, { 'H' } },
   { KEY_J, { 'J' } },
   { KEY_K, { 'K' } },
-  { KEY_L, { 'L' } },
+  { KEY_L, { 'L', 0, 0, 0x142 } },  // mod2: ł
   { KEY_SEMICOLON, { ';', ':' } },
   { KEY_APOSTROPHE, { '\'', '"' } },
   { KEY_GRAVE, { '`', '~' } },
   { KEY_LEFTSHIFT, { Shift } },
   { KEY_BACKSLASH, { '\\', '|' } },
-  { KEY_Z, { 'Z' } },
-  { KEY_X, { 'X' } },
-  { KEY_C, { 'C' } },
+  { KEY_Z, { 'Z', 0, 0, 0x17C } },  // mod2: ż
+  { KEY_X, { 'X', 0, 0, 0x17A } },  // mod2: ź
+  { KEY_C, { 'C', 0, 0, 0x107 } },  // mod2: ć
   { KEY_V, { 'V' } },
   { KEY_B, { 'B' } },
-  { KEY_N, { 'N' } },
+  { KEY_N, { 'N', 0, 0, 0x144 } },  // mod2: ń
   { KEY_M, { 'M' } },
   { KEY_COMMA, { ',', '<' } },
   { KEY_DOT, { '.', '>' } },
@@ -103,7 +103,8 @@ const KeyMap qwerty_keymap = {
   { KEY_RIGHTCTRL, { Ctrl } },
   { KEY_KPSLASH, { '/' } },
   // { KEY_SYSRQ 99
-  { KEY_RIGHTALT, { Alt } },
+  { KEY_RIGHTALT, { Mod2 } },
+  { 223, { Mod2 } }, // KEY_CANCEL = Folio Option key
   { KEY_LINEFEED, { Enter } },
   { KEY_HOME, { Home } },
   { KEY_UP, { Up } },
@@ -144,36 +145,36 @@ const KeyMap rm_qwerty_keymap = {
   { KEY_TAB, { Tab } },
   { KEY_Q, { 'Q' } },
   { KEY_W, { 'W' } },
-  { KEY_E, { 'E' } },
+  { KEY_E, { 'E', 0, 0, 0x119 } }, // mod2: ę
   { KEY_R, { 'R' } },
   { KEY_T, { 'T' } },
   { KEY_Y, { 'Y' } },
   { KEY_U, { 'U' } },
   { KEY_I, { 'I' } },
-  { KEY_O, { 'O' } },
+  { KEY_O, { 'O', 0, 0, 0x00F3 } }, // mod2: ó
   { KEY_P, { 'P' } },
   { KEY_ENTER, { Enter } },
   { KEY_LEFTCTRL, { Ctrl } },
-  { KEY_A, { 'A' } },
-  { KEY_S, { 'S' } },
+  { KEY_A, { 'A', 0, 0, 0x105 } },  // mod2: ą
+  { KEY_S, { 'S', 0, 0, 0x15B } },  // mod2: ś
   { KEY_D, { 'D' } },
   { KEY_F, { 'F' } },
   { KEY_G, { 'G' } },
   { KEY_H, { 'H' } },
   { KEY_J, { 'J' } },
   { KEY_K, { 'K' } },
-  { KEY_L, { 'L' } },
+  { KEY_L, { 'L', 0, 0, 0x142 } },  // mod2: ł
   { KEY_SEMICOLON, { ';', ':' } },
   { KEY_APOSTROPHE, { '\'', '"' } },
   { KEY_GRAVE, { '`', '~' } },
   { KEY_LEFTSHIFT, { Shift } },
   { KEY_BACKSLASH, { '\\', '|' } },
-  { KEY_Z, { 'Z' } },
-  { KEY_X, { 'X' } },
-  { KEY_C, { 'C' } },
+  { KEY_Z, { 'Z', 0, 0, 0x17C } },  // mod2: ż
+  { KEY_X, { 'X', 0, 0, 0x17A } },  // mod2: ź
+  { KEY_C, { 'C', 0, 0, 0x107 } },  // mod2: ć
   { KEY_V, { 'V' } },
   { KEY_B, { 'B' } },
-  { KEY_N, { 'N' } },
+  { KEY_N, { 'N', 0, 0, 0x144 } },  // mod2: ń
   { KEY_M, { 'M' } },
   { KEY_COMMA, { ',', '<' } },
   { KEY_DOT, { '.', '>' } },
@@ -182,7 +183,8 @@ const KeyMap rm_qwerty_keymap = {
   { KEY_LEFTALT, { Alt } },
   { KEY_SPACE, { ' ' } },
   { KEY_CAPSLOCK, { Escape } },
-  { KEY_RIGHTALT, { Alt } },
+  { KEY_RIGHTALT, { Mod2 } },
+  { 223, { Mod2 } }, // KEY_CANCEL = Folio Option key
   { KEY_UP, { Up } },
   { KEY_LEFT, { Left } },
   { KEY_RIGHT, { Right } },
