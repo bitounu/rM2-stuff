@@ -54,6 +54,8 @@ imgFile=yaft
 ```
 Bring remux menu with gesture and you will see 'yaft-24x48' item, select it to run.
 
+Polish characters are available on Folio with RightAlt+<letter>, e.g. `ą` - `RightAlt+a`.
+
 
 Projects
 --------
