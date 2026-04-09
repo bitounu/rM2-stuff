@@ -5,6 +5,56 @@ reMarkable Stuff
 
 Collection of reMarkable related apps, utilities and libraries.
 
+Different font sizes and support for Polish chars on Folio keyboard
+-------------------------------------------------------------------
+
+_All of this was done by Claude, Codex and me (5%). Look into `docs` folder for very detailed description._
+
+### Build
+
+Clone repo and run:
+
+```
+./scripts/test-fonts.sh
+```
+to build following variants of yaft:
+
+**Font variants** (all  Polish support — żółćęśąźń ŻÓŁĆĘŚĄŹŃ):
+
+| Binary | Cell size | Cols × Rows (rM2 1404×1872) |
+|--------|-----------|------------------------------|
+| `yaft-terminus-16x32` | 16×32 | 87 × 58 (original, small) |
+| `yaft-terminus-24x48` | 24×48 | 58 × 39 ★ recommended |
+| `yaft-terminus-28x56` | 28×56 | 50 × 33 |
+| `yaft-terminus-32x64` | 32×64 | 43 × 29 |
+| `yaft-spleen-16x32`   | 16×32 | 87 × 58 |
+| `yaft-spleen-32x64`   | 32×64 | 43 × 29 (currently deployed) |
+
+### Copy to RM2
+
+Transfer them to your Remarkable2, e.g:
+
+```
+scp build/font-test/yaft-terminus-24x48 root@10.11.99.1:/home/root/
+
+```
+
+### Make a new item in the launcher menu
+
+I use *remux* launcher.
+
+Create a file in `/opt/etc/draft/yaft-24x48.draft` with following content:
+
+```
+name=yaft-24x48
+desc=Framebuffer terminal emulator with bigger font
+call=/opt/bin/yaft-terminus-24x48
+term=:
+imgFile=yaft
+```
+Bring remux menu with gesture and you will see 'yaft-24x48' item, select it to run.
+
+
 Projects
 --------
 
