@@ -10,6 +10,14 @@ Different font sizes and support for Polish chars on Folio keyboard
 
 _All of this was done by Claude, Codex and me (5%). Look into `docs` folder for very detailed description._
 
+_Tested on Remarkable 2 firmware 3.3.2.1666 with Toltec installed._
+
+
+<img src="docs/rm2-terminal2.jpeg" width=500/>
+
+<img src="docs/rm2-terminal1.jpeg" width=500/>
+
+
 ### Build
 
 Clone repo and run:
@@ -29,6 +37,8 @@ to build following variants of yaft:
 | `yaft-terminus-32x64` | 32×64 | 43 × 29 |
 | `yaft-spleen-16x32`   | 16×32 | 87 × 58 |
 | `yaft-spleen-32x64`   | 32×64 | 43 × 29 (currently deployed) |
+
+Build will use Docker for crosscompiling, image is ~1.7GB so delete it after use.
 
 ### Copy to RM2
 
